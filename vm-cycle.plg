@@ -1,0 +1,91 @@
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+<!ENTITY name      "vm-cycle">
+<!ENTITY author    "alturismo">
+<!ENTITY version   "2024.11.18">
+<!ENTITY launch    "Settings/VMCycle">
+<!ENTITY gitURL    "https://raw.githubusercontent.com/alturismo/unraid-vm-cycle/master">
+<!ENTITY pluginURL "&gitURL;/&name;.plg">
+<!ENTITY pkgURL    "&gitURL;/pkg">
+<!ENTITY plgPATH   "/boot/config/plugins/&name;">
+<!ENTITY plgNAME   "&name;-&version;-x86_64">
+<!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
+<!ENTITY packages  "/boot/config/plugins/&name;/pkg">
+<!ENTITY md5       "ac5fa6e4a1db0ed0e6eaea5bfe725b98">
+]>
+<PLUGIN name="&name;" 
+        author="&author;" 
+        version="&version;" 
+        launch="&launch;" 
+        pluginURL="&pluginURL;" 
+        min="6.11.0"
+        support="https://forums.unraid.net/topic/81786-support-alturismo-repos/">
+ 
+<CHANGES>
+###2024.11.18
+- Initial Release.
+
+</CHANGES>
+
+<FILE Name="&plgPATH;/&plgNAME;.txz" Run="upgradepkg --install-new">
+ <URL>&pkgURL;/&plgNAME;.txz</URL>
+</FILE>
+
+<FILE Name="&emhttp;/README.md">
+<INLINE>
+**VM Cycle**
+
+Plugin to switch VM's with similar hardware passthrough.
+</INLINE>
+</FILE>
+
+<FILE Run="/bin/bash">
+<INLINE>
+echo "Checking executable flags..."
+
+if [ -f /usr/local/bin/mosquitto_pub ]; then
+    if [ ! -x /usr/local/bin/mosquitto_pub ]; then
+        chmod +x /usr/local/bin/mosquitto_pub
+        echo "mosquitto_pub is executable."
+    else
+        echo "mosquitto_pub already was executable."
+    fi
+else
+    echo "mosquitto_pub doesn't exist."
+fi
+
+if [ -f /usr/local/bin/mosquitto_sub ]; then
+    if [ ! -x /usr/local/bin/mosquitto_sub ]; then
+        chmod +x /usr/local/bin/mosquitto_sub
+        echo "mosquitto_sub is executable."
+    else
+        echo "mosquitto_sub already was executable."
+    fi
+else
+    echo "mosquitto_sub doesn't exist."
+fi
+
+if [ -f /usr/local/bin/bc ]; then
+    if [ ! -x /usr/local/bin/bc ]; then
+        chmod +x /usr/local/bin/bc
+        echo "bc is executable."
+    else
+        echo "bc already was executable."
+    fi
+else
+    echo "bc doesn't exist."
+fi
+
+</INLINE>
+</FILE>
+
+ <FILE Run="/bin/bash" Method="remove">
+  <INLINE>
+   echo "Removing &name;..."
+   removepkg &plgPATH;/*.txz
+   rm -rf &plgPATH;
+   rm -rf &emhttp;
+   echo "&name; has been removed"
+  </INLINE>
+ </FILE>
+</PLUGIN>
