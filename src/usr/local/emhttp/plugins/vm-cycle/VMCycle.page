@@ -11,7 +11,7 @@ $vmcyclevmdown             = isset($vmcyclesettings['VMDOWN']) ? $vmcyclesetting
 ?>
 
 <form markdown="1" method="POST" action="/update.php" target="progressFrame">
-<input type="hidden" name="#file" value="/boot/config/vmcyclesettings" />
+<input type="hidden" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
 
 VM 1:
 : <input type="text" name="VM1" class="narrow" maxlength="20" value="<?=$vmcyclesettings_vm1;?>" placeholder="VM 1 Name" >
