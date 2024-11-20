@@ -25,16 +25,16 @@
 
 </CHANGES>
 
+<FILE Name="&plgPATH;/&plgNAME;.txz" Run="upgradepkg --install-new">
+ <URL>&pkgURL;/&plgNAME;.txz</URL>
+</FILE>
+
 <FILE Name="&emhttp;/README.md">
 <INLINE>
 **VM Cycle**
 
 Plugin to switch VM's with similar hardware passthrough.
 </INLINE>
-</FILE>
-
-<FILE Name="&plugin;/&name;-&version;.txz" Run="upgradepkg --install-new">
-<URL>&gitURL;/packages/&name;.txz</URL>
 </FILE>
 
  <FILE Run="/bin/bash" Method="remove">
