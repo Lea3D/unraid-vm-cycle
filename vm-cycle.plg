@@ -9,7 +9,6 @@
 <!ENTITY plgPATH   "/boot/config/plugins/&name;">
 <!ENTITY plgNAME   "&name;-&version;-x86_64">
 <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
-<!ENTITY md5       "ac5fa6e4a1db0ed0e6eaea5bfe725b98">
 ]>
 <PLUGIN name="&name;" 
         author="&author;" 
