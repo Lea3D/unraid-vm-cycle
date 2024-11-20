@@ -1,5 +1,5 @@
 Menu="Utilities"
-Icon="vm-cycle.png"
+Icon="/src/usr/local/emhttp/plugins/images/vm-cycle.png"
 Title="vm-cycle"
 ---
 <?php
