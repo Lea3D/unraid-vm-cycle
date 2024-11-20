@@ -33,6 +33,10 @@ Plugin to switch VM's with similar hardware passthrough.
 </INLINE>
 </FILE>
 
+<FILE Name="&plgPATH;/&plgNAME;.txz" Run="upgradepkg --install-new">
+<URL>&gitURL;/packages/&name;.txz</URL>
+</FILE>
+
  <FILE Run="/bin/bash" Method="remove">
   <INLINE>
    echo "Removing &name;..."
