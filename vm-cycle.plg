@@ -6,11 +6,9 @@
 <!ENTITY launch    "Settings/VMCycle">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/alturismo/unraid-vm-cycle/master">
 <!ENTITY pluginURL "&gitURL;/&name;.plg">
-<!ENTITY pkgURL    "&gitURL;/pkg">
 <!ENTITY plgPATH   "/boot/config/plugins/&name;">
 <!ENTITY plgNAME   "&name;-&version;-x86_64">
 <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
-<!ENTITY packages  "/boot/config/plugins/&name;/pkg">
 <!ENTITY md5       "ac5fa6e4a1db0ed0e6eaea5bfe725b98">
 ]>
 <PLUGIN name="&name;" 
