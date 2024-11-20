@@ -3,7 +3,7 @@ Icon="vm-cycle.png"
 Title="VMCycle"
 ---
 <?php
-$vmcyclevmsetup            = parse_ini_file("/boot/config/vmcyclesettings",true);
+$vmcyclevmsetup            = parse_ini_file("/boot/config/plugins/vm-cycle/vmcyclesettings",true);
 $vmcyclevm1                = isset($vmcyclesettings['VM1']) ? $vmcyclesettings['VM1'] : "";
 $vmcyclevm2                = isset($vmcyclesettings['VM2']) ? $vmcyclesettings['VM2'] : "";
 $vmcyclevmrunning          = isset($vmcyclesettings['VMRUNNING']) ? $vmcyclesettings['VMRUNNING'] : "";
