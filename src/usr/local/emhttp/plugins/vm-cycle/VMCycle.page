@@ -1,6 +1,6 @@
 Menu="Utilities"
 Icon="vm-cycle.png"
-Title="VMCycle"
+Title="vm-cycle"
 ---
 <?php
 $vmcyclevmsetup            = parse_ini_file("/boot/config/plugins/vm-cycle/vmcyclesettings",true);
