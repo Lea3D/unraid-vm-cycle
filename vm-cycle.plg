@@ -32,9 +32,6 @@ Plugin to switch VM's with similar hardware passthrough.
 </INLINE>
 </FILE>
 
-</INLINE>
-</FILE>
-
  <FILE Run="/bin/bash" Method="remove">
   <INLINE>
    echo "Removing &name;..."
