@@ -1,13 +1,13 @@
 Menu="Utilities"
-Icon="/src/usr/local/emhttp/plugins/images/vm-cycle.png"
+Icon="vm-cycle.png"
 Title="vm-cycle"
 ---
 <?php
 $vmcyclevmsetup            = parse_ini_file("/boot/config/plugins/vm-cycle/vmcyclesettings",true);
-$vmcyclevm1                = isset($vmcyclevmsetup['VM1']) ? $vmcyclevmsetup['VM1'] : "";
-$vmcyclevm2                = isset($vmcyclevmsetup['VM2']) ? $vmcyclevmsetup['VM2'] : "";
-$vmcyclevmrunning          = isset($vmcyclevmsetup['VMRUNNING']) ? $vmcyclevmsetup['VMRUNNING'] : "";
-$vmcyclevmdown             = isset($vmcyclevmsetup['VMDOWN']) ? $vmcyclevmsetup['VMDOWN'] : "";
+$vmcyclevmsetup_vm1        = isset($vmcyclevmsetup['VM1']) ? $vmcyclevmsetup['VM1'] : "";
+$vmcyclevmsetup_vm2        = isset($vmcyclevmsetup['VM2']) ? $vmcyclevmsetup['VM2'] : "";
+$vmcyclevmsetup_vmrunning  = isset($vmcyclevmsetup['VMRUNNING']) ? $vmcyclevmsetup['VMRUNNING'] : "";
+$vmcyclevmsetup_vmdown     = isset($vmcyclevmsetup['VMDOWN']) ? $vmcyclevmsetup['VMDOWN'] : "";
 ?>
 
 <form markdown="1" method="POST" action="/update.php" target="progressFrame">
@@ -28,6 +28,7 @@ VM DOWN:
 <div style="text-align: center;">
     <input id="btnApply" type="submit" value="Apply">
     <input type="button" value="Done" onClick="done()">
+    <input type="button" value="Done" onClick="shell_exec("/usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh")">
 </div>
 
 </form>

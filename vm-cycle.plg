@@ -3,7 +3,7 @@
 <!ENTITY name      "vm-cycle">
 <!ENTITY author    "alturismo">
 <!ENTITY version   "2024.11.20e">
-<!ENTITY launch    "Settings/VMCycle">
+<!ENTITY launch    "Settings/vm-cycle">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/alturismo/unraid-vm-cycle/master">
 <!ENTITY pluginURL "&gitURL;/&name;.plg">
 <!ENTITY plgPATH   "/boot/config/plugins/&name;">
