@@ -40,6 +40,7 @@ Plugin to switch VM's with similar hardware passthrough.
  <FILE Run="/bin/bash" Method="remove">
   <INLINE>
    echo "Removing &name;..."
+   removepkg &plgPATH;/*.txz
    rm -rf &plgPATH;
    rm -rf &emhttp;
    echo "&name; has been removed"
