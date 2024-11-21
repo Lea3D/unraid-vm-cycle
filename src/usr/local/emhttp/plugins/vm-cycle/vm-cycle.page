@@ -1,13 +1,11 @@
 Menu="Utilities"
 Icon="vm-cycle.png"
-Title="vmcycle"
+Title="vm-cycle"
 ---
 <?php
 $vmcyclevmsetup            = parse_ini_file("/boot/config/plugins/vm-cycle/vmcyclesettings",true);
 $vmcyclevmsetup_vm1        = isset($vmcyclevmsetup['VM1']) ? $vmcyclevmsetup['VM1'] : "";
 $vmcyclevmsetup_vm2        = isset($vmcyclevmsetup['VM2']) ? $vmcyclevmsetup['VM2'] : "";
-$vmcyclevmsetup_vmrunning  = isset($vmcyclevmsetup['VMRUNNING']) ? $vmcyclevmsetup['VMRUNNING'] : "";
-$vmcyclevmsetup_vmdown     = isset($vmcyclevmsetup['VMDOWN']) ? $vmcyclevmsetup['VMDOWN'] : "";
 ?>
 
 <form markdown="1" method="POST" action="/update.php" target="progressFrame">
@@ -18,12 +16,6 @@ VM 1:
 
 VM 2:
 : <input type="text" name="VM2" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vm2;?>" placeholder="VM 2 Name" >
-
-VM RUNNING:
-: <input type="text" name="VMRUNNING" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vmrunning;?>" placeholder="running" >
-
-VM DOWN:
-: <input type="text" name="VMDOWN" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vmdown;?>" placeholder="shut off" >
 
 <div style="text-align: center;">
     <input id="btnApply" type="submit" value="Apply">
