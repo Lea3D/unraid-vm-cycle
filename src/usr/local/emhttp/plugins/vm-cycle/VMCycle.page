@@ -4,26 +4,26 @@ Title="vm-cycle"
 ---
 <?php
 $vmcyclevmsetup            = parse_ini_file("/boot/config/plugins/vm-cycle/vmcyclesettings",true);
-$vmcyclevm1                = isset($vmcyclesettings['VM1']) ? $vmcyclesettings['VM1'] : "";
-$vmcyclevm2                = isset($vmcyclesettings['VM2']) ? $vmcyclesettings['VM2'] : "";
-$vmcyclevmrunning          = isset($vmcyclesettings['VMRUNNING']) ? $vmcyclesettings['VMRUNNING'] : "";
-$vmcyclevmdown             = isset($vmcyclesettings['VMDOWN']) ? $vmcyclesettings['VMDOWN'] : "";
+$vmcyclevm1                = isset($vmcyclevmsetup['VM1']) ? $vmcyclevmsetup['VM1'] : "";
+$vmcyclevm2                = isset($vmcyclevmsetup['VM2']) ? $vmcyclevmsetup['VM2'] : "";
+$vmcyclevmrunning          = isset($vmcyclevmsetup['VMRUNNING']) ? $vmcyclevmsetup['VMRUNNING'] : "";
+$vmcyclevmdown             = isset($vmcyclevmsetup['VMDOWN']) ? $vmcyclevmsetup['VMDOWN'] : "";
 ?>
 
 <form markdown="1" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
 
 VM 1:
-: <input type="text" name="VM1" class="narrow" maxlength="20" value="<?=$vmcyclesettings_vm1;?>" placeholder="VM 1 Name" >
+: <input type="text" name="VM1" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vm1;?>" placeholder="VM 1 Name" >
 
 VM 2:
-: <input type="text" name="VM2" class="narrow" maxlength="20" value="<?=$vmcyclesettings_vm2;?>" placeholder="VM 2 Name" >
+: <input type="text" name="VM2" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vm2;?>" placeholder="VM 2 Name" >
 
 VM RUNNING:
-: <input type="text" name="VMRUNNING" class="narrow" maxlength="20" value="<?=$vmcyclesettings_vmrunning;?>" placeholder="running" >
+: <input type="text" name="VMRUNNING" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vmrunning;?>" placeholder="running" >
 
 VM DOWN:
-: <input type="text" name="VMDOWN" class="narrow" maxlength="20" value="<?=$vmcyclesettings_vmdown;?>" placeholder="shut off" >
+: <input type="text" name="VMDOWN" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vmdown;?>" placeholder="shut off" >
 
 <div style="text-align: center;">
     <input id="btnApply" type="submit" value="Apply">
