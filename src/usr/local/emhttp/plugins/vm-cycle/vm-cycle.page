@@ -28,7 +28,6 @@ VM DOWN:
 <div style="text-align: center;">
     <input id="btnApply" type="submit" value="Apply">
     <input type="button" value="Done" onClick="done()">
-    <input type="button" value="Done" onClick="shell_exec("/usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh")">
 </div>
 
 </form>
