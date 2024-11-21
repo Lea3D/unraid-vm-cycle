@@ -11,7 +11,7 @@ https://raw.githubusercontent.com/alturismo/unraid-vm-cycle/master/vm-cycle.plg
 ## Usage
 
 ### Preparation
-Enter your 2 VM Names which should be considered.
+Enter your VM Names which should be considered.
 ```
 Settings --> VM Cycle
 ```
