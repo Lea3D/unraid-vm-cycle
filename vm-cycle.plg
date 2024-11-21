@@ -2,7 +2,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "vm-cycle">
 <!ENTITY author    "alturismo">
-<!ENTITY version   "2024.11.20d">
+<!ENTITY version   "2024.11.20e">
 <!ENTITY launch    "Settings/VMCycle">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/alturismo/unraid-vm-cycle/master">
 <!ENTITY pluginURL "&gitURL;/&name;.plg">
@@ -37,9 +37,14 @@ Plugin to switch VM's with similar hardware passthrough.
 <URL>&gitURL;/packages/&name;.txz</URL>
 </FILE>
 
-if [ -f /usr/local/emhttp/plugins/vmc-ycle/scripts/vm-cycle.sh ]; then
-    if [ ! -x /usr/local/emhttp/plugins/vmc-ycle/scripts/vm-cycle.sh ]; then
-        chmod +x /usr/local/emhttp/plugins/vmc-ycle/scripts/vm-cycle.sh
+<FILE Run="/bin/bash">
+<INLINE>
+
+echo "Checking executable flags..."
+
+if [ -f /usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh ]; then
+    if [ ! -x /usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh ]; then
+        chmod +x /usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh
         echo "script is executable."
     else
         echo "script was already executable."
@@ -48,13 +53,16 @@ else
     echo "script doesn't exist."
 fi
 
- <FILE Run="/bin/bash" Method="remove">
-  <INLINE>
-   echo "Removing &name;..."
-   removepkg &plgPATH;/*.txz
-   rm -rf &plgPATH;
-   rm -rf &emhttp;
-   echo "&name; has been removed"
-  </INLINE>
- </FILE>
+</INLINE>
+</FILE>
+
+<FILE Run="/bin/bash" Method="remove">
+ <INLINE>
+  echo "Removing &name;..."
+  removepkg &plgPATH;/*.txz
+  rm -rf &plgPATH;
+  rm -rf &emhttp;
+  echo "&name; has been removed"
+ </INLINE>
+</FILE>
 </PLUGIN>
