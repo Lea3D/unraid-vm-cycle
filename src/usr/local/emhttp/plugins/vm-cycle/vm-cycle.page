@@ -20,7 +20,7 @@ VM 2:
 <div style="text-align: center;">
     <input id="btnApply" type="submit" value="Apply">
     <input type="button" value="Done" onClick="done()">
-	<input type="button" value="Switch" onClick="shell_exec("/usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh")">
+    <input type="button" value="Switch" onClick="shell_exec('/usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh')">
 </div>
 
 </form>
