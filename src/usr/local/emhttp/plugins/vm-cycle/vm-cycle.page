@@ -8,8 +8,18 @@ $vmcyclevmsetup_vm1        = isset($vmcyclevmsetup['VM1']) ? $vmcyclevmsetup['VM
 $vmcyclevmsetup_vm2        = isset($vmcyclevmsetup['VM2']) ? $vmcyclevmsetup['VM2'] : "";
 ?>
 
-<form markdown="1" method="POST" action="/update.php" target="progressFrame">
-<input type="hidden" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
+<script>
+    function send(command) {
+        if(command == "start"){
+            document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle/scripts/start";
+        }
+        document.getElementById("form").submit();
+    }
+</script>
+
+<form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
+<input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
+<input type="hidden" id="command" name="#command" value="" />
 
 VM 1:
 : <input type="text" name="VM1" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vm1;?>" placeholder="VM 1 Name" >
@@ -18,9 +28,8 @@ VM 2:
 : <input type="text" name="VM2" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vm2;?>" placeholder="VM 2 Name" >
 
 <div style="text-align: center;">
-    <input id="btnApply" type="submit" value="Apply">
-    <input type="button" value="Done" onClick="done()">
-    <input type="button" value="Switch" onClick="shell_exec('/usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh')">
+    <input type="button" value="Apply" onClick="send('apply')">
+    <input type="button" value="Start" onClick="send('start')">
 </div>
 
 </form>
