@@ -11,15 +11,15 @@ https://raw.githubusercontent.com/alturismo/unraid-vm-cycle/master/vm-cycle.plg
 ## Usage
 
 ### Preparation
-Enter your VM Names which should be considered.
+Enter your 2 VM Names which should be considered to cycle through.
 ```
 Settings --> VM Cycle
 ```
 
 ### Usage
-SettingsPage, switch.
+SettingsPage, cycle-vm.
 ```
-Switch --> will turn VMn off and VMn on in cycle
+Cycle VM --> will turn VM_n off and VM_n on in cycle
 ```
 
 ## Information

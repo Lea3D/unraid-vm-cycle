@@ -29,7 +29,7 @@ VM 2:
 
 <div style="text-align: center;">
     <input type="button" value="Apply" onClick="send('apply')">
-    <input type="button" value="Start" onClick="send('start')">
+    <input type="button" value="Cycle VM" onClick="send('start')">
 </div>
 
 </form>

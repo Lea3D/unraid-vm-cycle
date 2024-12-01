@@ -13,8 +13,6 @@ vm2_state=$(virsh domstate "$VM2")
 echo "$VM1 is $vm1_state"
 echo "$VM2 is $vm2_state"
 
-sleep 600
-
 if [ "$vm1_state" = "$vm_running" ] && [ "$vm2_state" = "$vm_down" ]; then
         echo "$VM1 is running shutting down"
         virsh shutdown "$VM1"
