@@ -4,6 +4,13 @@ source /boot/config/plugins/vm-cycle/vmcyclesettings
 
 ############### End config
 
+log_message() {
+  while IFS= read -r line; do
+    logger "vm-cycle: ${line}"
+  done
+}
+exec > >(log_message) 2>&1
+
 vm_running="running"
 vm_down="shut off"
 
