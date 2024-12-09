@@ -4,14 +4,20 @@ Title="vm-cycle"
 ---
 <?php
 $vmcyclevmsetup            = parse_ini_file("/boot/config/plugins/vm-cycle/vmcyclesettings",true);
+//VM Setup
 $vmcyclevmsetup_vm1        = isset($vmcyclevmsetup['VM1']) ? $vmcyclevmsetup['VM1'] : "";
 $vmcyclevmsetup_vm2        = isset($vmcyclevmsetup['VM2']) ? $vmcyclevmsetup['VM2'] : "";
+//VM Docker Setup
+$vmcyclevmsetup_vmdocker        = isset($vmcyclevmsetup['VMD']) ? $vmcyclevmsetup['VMD'] : "";
+$vmcyclevmsetup_docker        = isset($vmcyclevmsetup['DOCKERS']) ? $vmcyclevmsetup['DOCKERS'] : "";
 ?>
 
 <script>
     function send(command) {
         if(command == "start"){
             document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle/scripts/start";
+        } else if( command == "startdocker" ){
+            document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle/scripts/startdocker";
         }
         document.getElementById("form").submit();
     }
@@ -21,15 +27,44 @@ $vmcyclevmsetup_vm2        = isset($vmcyclevmsetup['VM2']) ? $vmcyclevmsetup['VM
 <input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
 <input type="hidden" id="command" name="#command" value="" />
 
+<div class="title"><span class="left"><i class="fa fa-hand-peace-o title"></i>Cycle VM vs VM</span></div>
+
 VM 1:
-: <input type="text" name="VM1" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vm1;?>" placeholder="VM 1 Name" >
+: <input type="text" name="VM1" class="narrow" maxlength="50" value="<?=$vmcyclevmsetup_vm1;?>" placeholder="VM 1 Name" >
+    <blockquote class='inline_help'>
+        <p>set yout first VM Name here to cycle, sequence doesnt matter</p>
+    </blockquote>
 
 VM 2:
-: <input type="text" name="VM2" class="narrow" maxlength="20" value="<?=$vmcyclevmsetup_vm2;?>" placeholder="VM 2 Name" >
+: <input type="text" name="VM2" class="narrow" maxlength="50" value="<?=$vmcyclevmsetup_vm2;?>" placeholder="VM 2 Name" >
+    <blockquote class='inline_help'>
+        <p>set yout second VM Name here to cycle, sequence doesnt matter</p>
+    </blockquote>
 
 <div style="text-align: center;">
     <input type="button" value="Apply" onClick="send('apply')">
-    <input type="button" value="Cycle VM" onClick="send('start')">
+    <input type="button" value="Cycle VMs" onClick="send('start')">
+</div>
+
+
+<div class="title"><span class="left"><i class="fa fa-hand-peace-o title"></i>Cycle VM vs Docker/s</span></div>
+
+VM:
+: <input type="text" name="VMD" class="narrow" maxlength="50" value="<?=$vmcyclevmsetup_vmdocker;?>" placeholder="VM Name" >
+    <blockquote class='inline_help'>
+        <p>set yout VM Name here to cycle</p>
+		<p>if the VM is running, we stop the VM, start the Dockers, if VM is off, vice vers</p>
+    </blockquote>
+
+DOCKER:
+: <input type="text" name="DOCKERS" class="narrow" maxlength="50" value="<?=$vmcyclevmsetup_docker;?>" placeholder="DOCKER Name/s" >
+    <blockquote class='inline_help'>
+        <p>set yout Docker Name/s here to cycle, space separated, sequence doesnt matter</p>
+    </blockquote>
+
+<div style="text-align: center;">
+    <input type="button" value="Apply" onClick="send('apply')">
+    <input type="button" value="Cycle VM Docker" onClick="send('startdocker')">
 </div>
 
 </form>
