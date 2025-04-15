@@ -37,8 +37,10 @@ $available_vms = get_vm_list($filter);
         document.getElementById("form").submit();
     }
     function refreshList() {
-    document.getElementById("command").value = "";
-    document.getElementById("form").submit();
+    const filter = document.querySelector('select[name="vmfilter"]');
+    if (filter) {
+        filter.form.submit();
+    }
 }
 </script>
 
@@ -57,7 +59,7 @@ Filter:
     <option value="usb" <?= $filter == 'usb' ? 'selected' : '' ?>>With USB passthrough</option>
     <option value="autostart" <?= $filter == 'autostart' ? 'selected' : '' ?>>With autostart enabled</option>
   </select>
-  <button type="button" onclick="refreshList()">🔁 Refresh</button>
+  
 
 VM 1:
 : <select name="VM1" class="narrow">
