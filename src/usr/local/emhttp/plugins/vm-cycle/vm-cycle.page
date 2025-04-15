@@ -10,6 +10,21 @@ $vmcyclevmsetup_vm2        = isset($vmcyclevmsetup['VM2']) ? $vmcyclevmsetup['VM
 //VM Docker Setup
 $vmcyclevmsetup_vmdocker        = isset($vmcyclevmsetup['VMD']) ? $vmcyclevmsetup['VMD'] : "";
 $vmcyclevmsetup_docker        = isset($vmcyclevmsetup['DOCKERS']) ? $vmcyclevmsetup['DOCKERS'] : "";
+
+function get_vm_list($filter = "all") {
+    $vms = [];
+    $cmd = "/usr/local/emhttp/plugins/vm-cycle/scripts/getvms.sh " . escapeshellarg($filter);
+    $output = shell_exec($cmd);
+    foreach (explode("\n", trim($output)) as $line) {
+        if (!empty($line)) {
+            $vms[] = htmlspecialchars($line, ENT_QUOTES);
+        }
+    }
+    return $vms;
+}
+
+$filter = isset($_POST['vmfilter']) ? $_POST['vmfilter'] : 'all';
+$available_vms = get_vm_list($filter);
 ?>
 
 <script>
@@ -21,6 +36,9 @@ $vmcyclevmsetup_docker        = isset($vmcyclevmsetup['DOCKERS']) ? $vmcyclevmse
         }
         document.getElementById("form").submit();
     }
+    function refreshList() {
+        document.getElementById("form").submit();
+    }
 </script>
 
 <form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
@@ -29,16 +47,35 @@ $vmcyclevmsetup_docker        = isset($vmcyclevmsetup['DOCKERS']) ? $vmcyclevmse
 
 <div class="title"><span class="left"><i class="fa fa-hand-peace-o title"></i>Cycle VM vs VM</span></div>
 
+Filter:
+: <select name="vmfilter" onchange="refreshList()">
+    <option value="all" <?= $filter == 'all' ? 'selected' : '' ?>>All VMs</option>
+    <option value="running" <?= $filter == 'running' ? 'selected' : '' ?>>Running only</option>
+    <option value="stopped" <?= $filter == 'stopped' ? 'selected' : '' ?>>Stopped only</option>
+    <option value="pci" <?= $filter == 'pci' ? 'selected' : '' ?>>With PCI passthrough</option>
+    <option value="usb" <?= $filter == 'usb' ? 'selected' : '' ?>>With USB passthrough</option>
+    <option value="autostart" <?= $filter == 'autostart' ? 'selected' : '' ?>>With autostart enabled</option>
+  </select>
+  <button type="button" onclick="refreshList()">🔁 Refresh</button>
+
 VM 1:
-: <input type="text" name="VM1" class="narrow" maxlength="50" value="<?=$vmcyclevmsetup_vm1;?>" placeholder="VM 1 Name" >
+: <select name="VM1" class="narrow">
+    <?php foreach ($available_vms as $vm): ?>
+        <option value="<?= $vm ?>" <?= $vm == $vmcyclevmsetup_vm1 ? 'selected' : '' ?>><?= $vm ?></option>
+    <?php endforeach; ?>
+  </select>
     <blockquote class='inline_help'>
-        <p>set yout first VM Name here to cycle, sequence doesnt matter</p>
+        <p>set your first VM Name here to cycle, sequence doesn't matter</p>
     </blockquote>
 
 VM 2:
-: <input type="text" name="VM2" class="narrow" maxlength="50" value="<?=$vmcyclevmsetup_vm2;?>" placeholder="VM 2 Name" >
+: <select name="VM2" class="narrow">
+    <?php foreach ($available_vms as $vm): ?>
+        <option value="<?= $vm ?>" <?= $vm == $vmcyclevmsetup_vm2 ? 'selected' : '' ?>><?= $vm ?></option>
+    <?php endforeach; ?>
+  </select>
     <blockquote class='inline_help'>
-        <p>set yout second VM Name here to cycle, sequence doesnt matter</p>
+        <p>set your second VM Name here to cycle, sequence doesn't matter</p>
     </blockquote>
 
 <div style="text-align: center;">
@@ -46,20 +83,19 @@ VM 2:
     <input type="button" value="Cycle VMs" onClick="send('start')">
 </div>
 
-
 <div class="title"><span class="left"><i class="fa fa-hand-peace-o title"></i>Cycle VM vs Docker/s</span></div>
 
 VM:
 : <input type="text" name="VMD" class="narrow" maxlength="50" value="<?=$vmcyclevmsetup_vmdocker;?>" placeholder="VM Name" >
     <blockquote class='inline_help'>
-        <p>set yout VM Name here to cycle</p>
-		<p>if the VM is running, we stop the VM, start the Dockers, if VM is off, vice vers</p>
+        <p>set your VM Name here to cycle</p>
+		<p>if the VM is running, we stop the VM, start the Dockers, if VM is off, vice versa</p>
     </blockquote>
 
 DOCKER:
 : <input type="text" name="DOCKERS" class="narrow" maxlength="50" value="<?=$vmcyclevmsetup_docker;?>" placeholder="DOCKER Name/s" >
     <blockquote class='inline_help'>
-        <p>set yout Docker Name/s here to cycle, space separated, sequence doesnt matter</p>
+        <p>set your Docker Name/s here to cycle, space separated, sequence doesn't matter</p>
     </blockquote>
 
 <div style="text-align: center;">

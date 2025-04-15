@@ -1,6 +1,6 @@
 <?xml version='1.0' standalone='yes'?>
 <!DOCTYPE PLUGIN [
-<!ENTITY name      "vm-cycle">
+<!ENTITY name      "vm-cycle-copy">
 <!ENTITY author    "alturismo">
 <!ENTITY version   "2024.12.09">
 <!ENTITY launch    "Settings/vm-cycle">
