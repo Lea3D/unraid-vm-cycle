@@ -3,7 +3,7 @@ Icon="vm-cycle.png"
 Title="vm-cycle"
 ---
 <?php
-$vmcyclevmsetup            = parse_ini_file("/boot/config/plugins/vm-cycle/vmcyclesettings",true);
+$vmcyclevmsetup            = parse_ini_file("/boot/config/plugins/vm-cycle-copy/vmcyclesettings",true);
 //VM Setup
 $vmcyclevmsetup_vm1        = isset($vmcyclevmsetup['VM1']) ? $vmcyclevmsetup['VM1'] : "";
 $vmcyclevmsetup_vm2        = isset($vmcyclevmsetup['VM2']) ? $vmcyclevmsetup['VM2'] : "";
@@ -13,7 +13,7 @@ $vmcyclevmsetup_docker        = isset($vmcyclevmsetup['DOCKERS']) ? $vmcyclevmse
 
 function get_vm_list($filter = "all") {
     $vms = [];
-    $cmd = "/usr/local/emhttp/plugins/vm-cycle/scripts/getvms.sh " . escapeshellarg($filter);
+    $cmd = "/usr/local/emhttp/plugins/vm-cycle-copy/scripts/getvms.sh " . escapeshellarg($filter);
     $output = shell_exec($cmd);
     foreach (explode("\n", trim($output)) as $line) {
         if (!empty($line)) {
@@ -30,9 +30,9 @@ $available_vms = get_vm_list($filter);
 <script>
     function send(command) {
         if(command == "start"){
-            document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle/scripts/start";
+            document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle-copy/scripts/start";
         } else if( command == "startdocker" ){
-            document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle/scripts/startdocker";
+            document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle-copy/scripts/startdocker";
         }
         document.getElementById("form").submit();
     }
@@ -42,7 +42,7 @@ $available_vms = get_vm_list($filter);
 </script>
 
 <form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
-<input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
+<input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle-copy/vmcyclesettings" />
 <input type="hidden" id="command" name="#command" value="" />
 
 <div class="title"><span class="left"><i class="fa fa-hand-peace-o title"></i>Cycle VM vs VM</span></div>

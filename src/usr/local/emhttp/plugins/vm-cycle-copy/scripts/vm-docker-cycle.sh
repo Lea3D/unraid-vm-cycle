@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /boot/config/plugins/vm-cycle/vmcyclesettings
+source /boot/config/plugins/vm-cycle-copy/vmcyclesettings
 
 ############### End config
 
