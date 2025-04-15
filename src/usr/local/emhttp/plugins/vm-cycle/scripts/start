@@ -18,5 +18,5 @@
 params=("$@")
 for i in "${!params[@]}"; do [ -z "${params[i]}" ] && unset "params[i]"; done
 echo "Starting..."
-nohup /usr/local/emhttp/plugins/vm-cycle-copy/scripts/vm-docker-cycle.sh "${params[@]}" >/dev/null 2>&1 &
+nohup /usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh "${params[@]}" >/dev/null 2>&1 &
 sleep 1
