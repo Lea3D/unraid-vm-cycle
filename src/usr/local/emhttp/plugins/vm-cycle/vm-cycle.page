@@ -37,19 +37,8 @@ $available_vms = get_vm_list($filter);
         document.getElementById("form").submit();
     }
     function refreshList() {
-    const filter = document.querySelector('select[name="vmfilter"]').value;
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = location.href;
-
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "vmfilter";
-    input.value = filter;
-
-    form.appendChild(input);
-    document.body.appendChild(form);
-    form.submit();
+    document.getElementById("command").value = "";
+    document.getElementById("form").submit();
 }
 </script>
 
