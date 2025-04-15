@@ -1,7 +1,7 @@
 <?xml version='1.0' standalone='yes'?>
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "vm-cycle-copy">
-<!ENTITY author    "alturismo">
+<!ENTITY author    "lea3d">
 <!ENTITY version   "2024.12.09">
 <!ENTITY launch    "Settings/vm-cycle">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/lea3d/unraid-vm-cycle/master">
@@ -45,51 +45,28 @@ Plugin to switch VM's with similar hardware passthrough.
 
 echo "Checking executable flags..."
 
-if [ -f /usr/local/emhttp/plugins/vm-cycle/scripts/none ]; then
-    if [ ! -x /usr/local/emhttp/plugins/vm-cycle/scripts/none ]; then
-        chmod +x /usr/local/emhttp/plugins/vm-cycle/scripts/none
-        echo "script is executable."
-    else
-        echo "script was already executable."
-    fi
-else
-    echo "script doesn't exist."
-fi
+for script in \
+  /usr/local/emhttp/plugins/vm-cycle-copy/scripts/none \
+  /usr/local/emhttp/plugins/vm-cycle-copy/scripts/start \
+  /usr/local/emhttp/plugins/vm-cycle-copy/scripts/vm-cycle.sh \
+  /usr/local/emhttp/plugins/vm-cycle-copy/scripts/vm-docker-cycle.sh \
+  /usr/local/emhttp/plugins/vm-cycle-copy/scripts/getvms.sh \
+  /usr/local/emhttp/plugins/vm-cycle-copy/scripts/getdockers.sh
 
-if [ -f /usr/local/emhttp/plugins/vm-cycle/scripts/start ]; then
-    if [ ! -x /usr/local/emhttp/plugins/vm-cycle/scripts/start ]; then
-        chmod +x /usr/local/emhttp/plugins/vm-cycle/scripts/start
-        echo "script is executable."
+do
+  if [ -f "$script" ]; then
+    if [ ! -x "$script" ]; then
+      chmod +x "$script"
+      echo "$script is now executable."
     else
-        echo "script was already executable."
+      echo "$script was already executable."
     fi
-else
-    echo "script doesn't exist."
-fi
+  else
+    echo "$script doesn't exist."
+  fi
+done
 
-if [ -f /usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh ]; then
-    if [ ! -x /usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh ]; then
-        chmod +x /usr/local/emhttp/plugins/vm-cycle/scripts/vm-cycle.sh
-        echo "script is executable."
-    else
-        echo "script was already executable."
-    fi
-else
-    echo "script doesn't exist."
-fi
-
-if [ -f /usr/local/emhttp/plugins/vm-cycle/scripts/vm-docker-cycle.sh ]; then
-    if [ ! -x /usr/local/emhttp/plugins/vm-cycle/scripts/vm-docker-cycle.sh ]; then
-        chmod +x /usr/local/emhttp/plugins/vm-cycle/scripts/vm-docker-cycle.sh
-        echo "script is executable."
-    else
-        echo "script was already executable."
-    fi
-else
-    echo "script doesn't exist."
-fi
-
-touch /boot/config/plugins/vm-cycle/vmcyclesettings
+touch /boot/config/plugins/vm-cycle-copy/vmcyclesettings
 
 </INLINE>
 </FILE>
