@@ -24,11 +24,6 @@ case "$FILTER" in
       virsh dumpxml "$vm" | grep -q "<hostdev.*type='usb'" && echo "$vm"
     done
     ;;
-  autostart)
-    for vm in $(virsh list --all --name); do
-      virsh autostart "$vm" 2>/dev/null | grep -q 'enabled' && echo "$vm"
-    done
-    ;;
   all|*)
     virsh list --all --name
     ;;
