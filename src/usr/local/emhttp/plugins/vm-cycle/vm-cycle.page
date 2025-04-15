@@ -38,7 +38,11 @@ $available_vms = get_vm_list($filter);
     }
 </script>
 
-<form method="POST">
+<div style="margin: 10px 0;">
+  <i class="icon-hardware PanelIcon" style="font-size: 24px;"></i>
+</div>
+
+$1
 Filter:
 : <select name="vmfilter" class="narrow" onchange="this.form.submit()">
     <option value="all" <?= $filter == 'all' ? 'selected' : '' ?>>All VMs</option>
