@@ -38,19 +38,45 @@ $available_vms = get_vm_list($filter);
     }
 </script>
 
-<div style="margin: 10px 0;">
-  <i class="icon-hardware PanelIcon" style="font-size: 24px;"></i>
-</div>
-
-Filter:
-: <select name="vmfilter" class="narrow" onchange="this.form.submit()">
-    <option value="all" <?= $filter == 'all' ? 'selected' : '' ?>>All VMs</option>
-    <option value="running" <?= $filter == 'running' ? 'selected' : '' ?>>Running only</option>
-    <option value="stopped" <?= $filter == 'stopped' ? 'selected' : '' ?>>Stopped only</option>
-    <option value="pci" <?= $filter == 'pci' ? 'selected' : '' ?>>With PCI passthrough</option>
-    <option value="usb" <?= $filter == 'usb' ? 'selected' : '' ?>>With USB passthrough</option>
-  </select>
+<form method="POST">
+  Filter:
+  : <select name="vmfilter" class="narrow" onchange="this.form.submit()">
+      <option value="all" <?= $filter == 'all' ? 'selected' : '' ?>>All VMs</option>
+      <option value="running" <?= $filter == 'running' ? 'selected' : '' ?>>Running only</option>
+      <option value="stopped" <?= $filter == 'stopped' ? 'selected' : '' ?>>Stopped only</option>
+      <option value="paused" <?= $filter == 'paused' ? 'selected' : '' ?>>Paused only</option>
+      <option value="pci" <?= $filter == 'pci' ? 'selected' : '' ?>>With PCI passthrough</option>
+      <option value="usb" <?= $filter == 'usb' ? 'selected' : '' ?>>With USB passthrough</option>
+    </select>
 </form>
+
+<ul style="list-style: none; padding-left: 0;">
+<?php
+foreach ($available_vms as $vm) {
+    $vmstate = trim(shell_exec("virsh domstate " . escapeshellarg($vm)));
+    $xml = shell_exec("virsh dumpxml " . escapeshellarg($vm));
+    $has_pci = strpos($xml, "<hostdev") !== false && strpos($xml, "type='pci'") !== false;
+    $has_usb = strpos($xml, "<hostdev") !== false && strpos($xml, "type='usb'") !== false;
+
+    switch ($vmstate) {
+        case 'running':
+            $state_icon = '<i class="fa fa-play green-text"></i>';
+            break;
+        case 'paused':
+            $state_icon = '<i class="fa fa-square paused orange-text"></i>';
+            break;
+        default:
+            $state_icon = '<i class="fa fa-square stopped red-text"></i>';
+    }
+
+    $pci_icon = $has_pci ? '<i class="icon-hardware PanelIcon"></i>' : '<span style="display:inline-block; width:16px;"></span>';
+    $usb_icon = $has_usb ? '<i class="icon-usb"></i>' : '<span style="display:inline-block; width:16px;"></span>';
+
+    echo "<li>$vm $state_icon $pci_icon $usb_icon</li>
+";
+}
+?>
+</ul>
 
 <form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />

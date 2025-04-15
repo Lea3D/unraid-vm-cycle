@@ -9,6 +9,9 @@ case "$FILTER" in
   stopped)
     virsh list --state-shutoff --name
     ;;
+  paused)
+    virsh list --state-paused --name
+    ;;
   passthrough)
     for vm in $(virsh list --all --name); do
       virsh dumpxml "$vm" | grep -q "<hostdev" && echo "$vm"
