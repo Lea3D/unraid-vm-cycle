@@ -36,39 +36,24 @@ $available_vms = get_vm_list($filter);
         }
         document.getElementById("form").submit();
     }
-    function refreshList() {
-    const filter = document.querySelector('select[name="vmfilter"]');
-    if (filter) {
-        filter.form.submit();
-    }
-}
 </script>
 
-<form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
-<input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
-<input type="hidden" id="command" name="#command" value="" />
-
-<div class="title"><span class="left"><i class="fa fa-hand-peace-o title"></i>Cycle VM vs VM</span></div>
-
-</form>
-
-<!-- Filter form -->
 <form method="POST">
 Filter:
-: <select name="vmfilter" onchange="this.form.submit()">
+: <select name="vmfilter" class="narrow" onchange="this.form.submit()">
     <option value="all" <?= $filter == 'all' ? 'selected' : '' ?>>All VMs</option>
     <option value="running" <?= $filter == 'running' ? 'selected' : '' ?>>Running only</option>
     <option value="stopped" <?= $filter == 'stopped' ? 'selected' : '' ?>>Stopped only</option>
     <option value="pci" <?= $filter == 'pci' ? 'selected' : '' ?>>With PCI passthrough</option>
     <option value="usb" <?= $filter == 'usb' ? 'selected' : '' ?>>With USB passthrough</option>
-    <option value="autostart" <?= $filter == 'autostart' ? 'selected' : '' ?>>With autostart enabled</option>
   </select>
 </form>
 
 <form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
 <input type="hidden" id="command" name="#command" value="" />
-  
+
+<div class="title"><span class="left"><i class="fa fa-hand-peace-o title"></i>Cycle VM vs VM</span></div>
 
 VM 1:
 : <select name="VM1" class="narrow">
