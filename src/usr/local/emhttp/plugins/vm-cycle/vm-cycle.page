@@ -50,10 +50,10 @@ $available_vms = get_vm_list($filter);
     </select>
 </form>
 
-<table style="margin: 1em 0; border-collapse: collapse; width: 100%;">
+<table style="margin: 1em 0; border-collapse: collapse; width: 40%;">
   <thead>
     <tr>
-      <th style="text-align: center; padding: 0.5em 1em;">VM Name</th>
+      <th style="text-align: left; padding: 0.5em 1em;">VM Name</th>
       <th style="text-align: center; padding: 0.5em;">Status</th>
       <th style="text-align: center; padding: 0.5em;">PCI</th>
       <th style="text-align: center; padding: 0.5em;">USB</th>
