@@ -68,7 +68,7 @@ foreach ($available_vms as $vm) {
     $icon = '';
     if (preg_match('/<vmtemplate[^>]*icon="([^"]+)"/', $xml, $matches)) {
         $icon_name = basename($matches[1]);
-        $icon_path = "/usr/local/emhttp/plugins/dynamix.vm.manager/templates/images/" . $icon_name;
+        $icon_path = "/plugins/dynamix.vm.manager/templates/images/" . $icon_name;
         if (file_exists($icon_path)) {
             $icon = '<img src="' . $icon_path . '" class="img">';
         } else {
