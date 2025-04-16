@@ -66,14 +66,9 @@ $available_vms = get_vm_list($filter);
 foreach ($available_vms as $vm) {
     $xml = shell_exec("virsh dumpxml " . escapeshellarg($vm));
     $icon = '';
-    if (preg_match('/<vmtemplate[^>]*icon="([^"]+)"/', $xml, $matches)) {
+    if (preg_match('/<vmtemplate[^>]*icon="([^\"]+)"/', $xml, $matches)) {
         $icon_name = basename($matches[1]);
-        $icon_path = "/plugins/dynamix.vm.manager/templates/images/" . $icon_name;
-        if (file_exists($icon_path)) {
-            $icon = '<img src="/plugins/dynamix.vm.manager/templates/images/' . $icon_name . '" class="img">';
-        } else {
-            $icon = '<span style="display:inline-block; width:24px;"></span>';
-        }
+        $icon = '<img src="/plugins/dynamix.vm.manager/templates/images/' . $icon_name . '" class="img">';
     } else {
         $icon = '<span style="display:inline-block; width:24px;"></span>';
     }
