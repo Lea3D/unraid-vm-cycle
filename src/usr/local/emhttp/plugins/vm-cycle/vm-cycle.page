@@ -54,6 +54,7 @@ $available_vms = get_vm_list($filter);
   <table style="border-collapse: collapse; width: auto; max-width: 800px; margin: 0 auto;">
   <thead>
     <tr>
+      <th style="text-align: center; padding: 0.5em;">Icon</th>
       <th style="text-align: left; padding: 0.5em 1em;">VM Name</th>
       <th style="text-align: center; padding: 0.5em;">Status</th>
       <th style="text-align: center; padding: 0.5em;">PCI</th>
@@ -63,8 +64,21 @@ $available_vms = get_vm_list($filter);
   <tbody>
 <?php
 foreach ($available_vms as $vm) {
-    $vmstate = trim(shell_exec("virsh domstate " . escapeshellarg($vm)));
     $xml = shell_exec("virsh dumpxml " . escapeshellarg($vm));
+    $icon = '';
+    if (preg_match('/<vmtemplate[^>]*icon="([^"]+)"/', $xml, $matches)) {
+        $icon_name = basename($matches[1]);
+        $icon_path = "/usr/local/emhttp/plugins/dynamix.vm.manager/templates/images/" . $icon_name;
+        if (file_exists($icon_path)) {
+            $icon = '<img src="' . $icon_path . '" alt="icon" style="height: 24px;">';
+        } else {
+            $icon = '<span style="display:inline-block; width:24px;"></span>';
+        }
+    } else {
+        $icon = '<span style="display:inline-block; width:24px;"></span>';
+    }
+
+    $vmstate = trim(shell_exec("virsh domstate " . escapeshellarg($vm)));
     $has_pci = strpos($xml, "<hostdev mode='subsystem' type='pci'") !== false;
     $has_usb = strpos($xml, "<hostdev mode='subsystem' type='usb'") !== false;
 
@@ -83,6 +97,7 @@ foreach ($available_vms as $vm) {
     $usb_icon = $has_usb ? '<i class="icon-usb"></i>' : '<span style="display:inline-block; width:16px;"></span>';
 
     echo "    <tr>\n";
+    echo '      <td style="text-align: center; padding: 0.5em;">' . $icon . '</td>' . "\n";
     echo '      <td style="padding: 0.5em 1em;">' . $vm . '</td>' . "\n";
     echo '      <td style="text-align: center; padding: 0.5em;">' . $state_icon . '</td>' . "\n";
     echo '      <td style="text-align: center; padding: 0.5em;">' . $pci_icon . '</td>' . "\n";
