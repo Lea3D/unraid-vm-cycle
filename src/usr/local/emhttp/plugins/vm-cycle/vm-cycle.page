@@ -78,10 +78,13 @@ foreach ($available_vms as $vm) {
     $has_pci = strpos($xml, "<hostdev mode='subsystem' type='pci'") !== false;
     $has_usb = strpos($xml, "<hostdev mode='subsystem' type='usb'") !== false;
 
-    preg_match_all('/<hostdev.*?address.*?domain.*?bus.*?slot.*?function.*?>/s', $xml, $dev_matches);
-    preg_match_all('/<address.*?type=.*?pci.*?slot=.*?>/', $xml, $addr_matches);
-    preg_match('/<model type=\'(.*?)\'\/>/', $xml, $gfx_match);
-    $graphics = isset($gfx_match[1]) ? htmlspecialchars($gfx_match[1]) : '';
+    // Try to extract GPU name
+    $graphics = '';
+    if (preg_match_all('/<hostdev .*?address=.*?>.*?<source>.*?<address.*?bus=.*?slot=.*?function=.*?\/>(.*?)<\/hostdev>/s', $xml, $gpu_matches)) {
+        $graphics = 'Passthrough GPU';
+    } elseif (preg_match('/<model type=\'(.*?)\'\/>/', $xml, $gfx_match)) {
+        $graphics = htmlspecialchars($gfx_match[1]);
+    }
 
     switch ($vmstate) {
         case 'running':
