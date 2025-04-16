@@ -50,13 +50,22 @@ $available_vms = get_vm_list($filter);
     </select>
 </form>
 
-<ul style="list-style: none; padding-left: 0;">
+<table style="margin: 1em 0; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th style="text-align: left; padding-right: 1em;">VM Name</th>
+      <th>Status</th>
+      <th>PCI</th>
+      <th>USB</th>
+    </tr>
+  </thead>
+  <tbody>
 <?php
 foreach ($available_vms as $vm) {
     $vmstate = trim(shell_exec("virsh domstate " . escapeshellarg($vm)));
     $xml = shell_exec("virsh dumpxml " . escapeshellarg($vm));
-    $has_pci = strpos($xml, "<hostdev") !== false && strpos($xml, "type='pci'") !== false;
-    $has_usb = strpos($xml, "<hostdev") !== false && strpos($xml, "type='usb'") !== false;
+    $has_pci = strpos($xml, "<hostdev mode='subsystem' type='pci'") !== false;
+    $has_usb = strpos($xml, "<hostdev mode='subsystem' type='usb'") !== false;
 
     switch ($vmstate) {
         case 'running':
@@ -72,11 +81,22 @@ foreach ($available_vms as $vm) {
     $pci_icon = $has_pci ? '<i class="icon-hardware PanelIcon"></i>' : '<span style="display:inline-block; width:16px;"></span>';
     $usb_icon = $has_usb ? '<i class="icon-usb"></i>' : '<span style="display:inline-block; width:16px;"></span>';
 
-    echo "<li>$vm $state_icon $pci_icon $usb_icon</li>
+    echo "    <tr>
+";
+    echo "      <td style=\"padding-right: 1em;\">$vm</td>
+";
+    echo "      <td>$state_icon</td>
+";
+    echo "      <td>$pci_icon</td>
+";
+    echo "      <td>$usb_icon</td>
+";
+    echo "    </tr>
 ";
 }
 ?>
-</ul>
+  </tbody>
+</table>
 
 <form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
