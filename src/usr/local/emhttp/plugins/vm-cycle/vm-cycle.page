@@ -50,7 +50,8 @@ $available_vms = get_vm_list($filter);
     </select>
 </form>
 
-<div style="display: flex; justify-content: center;"><table style="border-collapse: collapse; min-width: 600px;">
+<div style="display: flex; justify-content: center;">
+  <table style="border-collapse: collapse; width: auto; max-width: 800px; margin: 0 auto;">
   <thead>
     <tr>
       <th style="text-align: left; padding: 0.5em 1em;">VM Name</th>
