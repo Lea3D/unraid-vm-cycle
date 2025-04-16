@@ -70,7 +70,7 @@ foreach ($available_vms as $vm) {
         $icon_name = basename($matches[1]);
         $icon_path = "/plugins/dynamix.vm.manager/templates/images/" . $icon_name;
         if (file_exists($icon_path)) {
-            $icon = '<img src="' . $icon_path . '" alt="icon" style="height: 24px;">';
+            $icon = '<img src="' . $icon_path . '" alt="icon" style="height: 24px; position: relative; z-index: 10;">';
         } else {
             $icon = '<span style="display:inline-block; width:24px;"></span>';
         }
