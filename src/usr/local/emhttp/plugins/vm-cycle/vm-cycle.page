@@ -51,7 +51,7 @@ $available_vms = get_vm_list($filter);
 </form>
 
 <div style="display: flex; justify-content: center;">
-  <table style="border-collapse: collapse; width: auto; max-width: 800px; margin: 0 auto;">
+  <table style="border-collapse: collapse; width: auto; max-width: 1000px; margin: 0 auto;">
   <thead>
     <tr>
       <th style="text-align: center; padding: 0.5em;">Icon</th>
@@ -59,6 +59,7 @@ $available_vms = get_vm_list($filter);
       <th style="text-align: center; padding: 0.5em;">Status</th>
       <th style="text-align: center; padding: 0.5em;">PCI</th>
       <th style="text-align: center; padding: 0.5em;">USB</th>
+      <th style="text-align: left; padding: 0.5em;">Graphics</th>
     </tr>
   </thead>
   <tbody>
@@ -66,7 +67,7 @@ $available_vms = get_vm_list($filter);
 foreach ($available_vms as $vm) {
     $xml = shell_exec("virsh dumpxml " . escapeshellarg($vm));
     $icon = '';
-    if (preg_match('/<vmtemplate[^>]*icon="([^\"]+)"/', $xml, $matches)) {
+    if (preg_match('/<vmtemplate[^>]*icon="([^"]+)"/', $xml, $matches)) {
         $icon_name = basename($matches[1]);
         $icon = '<img src="/plugins/dynamix.vm.manager/templates/images/' . $icon_name . '" class="img">';
     } else {
@@ -76,6 +77,11 @@ foreach ($available_vms as $vm) {
     $vmstate = trim(shell_exec("virsh domstate " . escapeshellarg($vm)));
     $has_pci = strpos($xml, "<hostdev mode='subsystem' type='pci'") !== false;
     $has_usb = strpos($xml, "<hostdev mode='subsystem' type='usb'") !== false;
+
+    preg_match_all('/<hostdev.*?address.*?domain.*?bus.*?slot.*?function.*?>/s', $xml, $dev_matches);
+    preg_match_all('/<address.*?type=.*?pci.*?slot=.*?>/', $xml, $addr_matches);
+    preg_match('/<model type=\'(.*?)\'\/>/', $xml, $gfx_match);
+    $graphics = isset($gfx_match[1]) ? htmlspecialchars($gfx_match[1]) : '';
 
     switch ($vmstate) {
         case 'running':
@@ -97,6 +103,7 @@ foreach ($available_vms as $vm) {
     echo '      <td style="text-align: center; padding: 0.5em;">' . $state_icon . '</td>' . "\n";
     echo '      <td style="text-align: center; padding: 0.5em;">' . $pci_icon . '</td>' . "\n";
     echo '      <td style="text-align: center; padding: 0.5em;">' . $usb_icon . '</td>' . "\n";
+    echo '      <td style="padding: 0.5em;">' . $graphics . '</td>' . "\n";
     echo "    </tr>\n";
 }
 ?>
