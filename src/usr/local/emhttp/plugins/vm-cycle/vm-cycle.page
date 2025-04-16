@@ -50,7 +50,7 @@ $available_vms = get_vm_list($filter);
     </select>
 </form>
 
-<table style="margin: 1em 0; border-collapse: collapse; width: 40%;">
+<div style="display: flex; justify-content: center;"><table style="border-collapse: collapse; min-width: 600px;">
   <thead>
     <tr>
       <th style="text-align: left; padding: 0.5em 1em;">VM Name</th>
@@ -90,7 +90,7 @@ foreach ($available_vms as $vm) {
 }
 ?>
   </tbody>
-</table>
+</table></div>
 
 <form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
