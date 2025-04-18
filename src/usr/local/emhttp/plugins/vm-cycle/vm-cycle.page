@@ -10,108 +10,47 @@ $vmcyclevmsetup_vm2 = isset($vmcyclevmsetup['VM2']) ? $vmcyclevmsetup['VM2'] : "
 //VM Docker Setup
 $vmcyclevmsetup_vmdocker = isset($vmcyclevmsetup['VMD']) ? $vmcyclevmsetup['VMD'] : "";
 $vmcyclevmsetup_docker = isset($vmcyclevmsetup['DOCKERS']) ? $vmcyclevmsetup['DOCKERS'] : "";
-
-function get_vm_list($filter = "all") {
-    $vms = [];
-    $cmd = "/usr/local/emhttp/plugins/vm-cycle/scripts/getvms.sh " . escapeshellarg($filter);
-    $output = shell_exec($cmd);
-    foreach (explode("\n", trim($output)) as $line) {
-        if (!empty($line)) {
-            $vms[] = htmlspecialchars($line, ENT_QUOTES);
-        }
-    }
-    return $vms;
-}
-
-$filter = isset($_POST['vmfilter']) ? $_POST['vmfilter'] : 'all';
-$available_vms = get_vm_list($filter);
 ?>
 
 <script>
-    function send(command) {
-        if(command == "start"){
-            document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle/scripts/start";
-        } else if( command == "startdocker" ){
-            document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle/scripts/startdocker";
-        }
-        document.getElementById("form").submit();
-    }
-</script>
+function send(command) {
+  if(command == "start"){
+    document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle/scripts/start";
+  } else if( command == "startdocker" ){
+    document.getElementById("command").value = "/usr/local/emhttp/plugins/vm-cycle/scripts/startdocker";
+  }
+  document.getElementById("form").submit();
+}
 
-<form method="POST">
-  Filter:
-  : <select name="vmfilter" class="narrow" onchange="this.form.submit()">
-      <option value="all" <?= $filter == 'all' ? 'selected' : '' ?>>All VMs</option>
-      <option value="running" <?= $filter == 'running' ? 'selected' : '' ?>>Running only</option>
-      <option value="stopped" <?= $filter == 'stopped' ? 'selected' : '' ?>>Stopped only</option>
-      <option value="paused" <?= $filter == 'paused' ? 'selected' : '' ?>>Paused only</option>
-      <option value="pci" <?= $filter == 'pci' ? 'selected' : '' ?>>With PCI passthrough</option>
-      <option value="usb" <?= $filter == 'usb' ? 'selected' : '' ?>>With USB passthrough</option>
-    </select>
-</form>
+function loadVmTable() {
+  fetch('/plugins/dynamix.vm.manager/include/VMMachines.php')
+    .then(response => response.text())
+    .then(data => {
+      const [tableHtml] = data.split('\0');
+      document.getElementById('vm-table-body').innerHTML = tableHtml;
+    });
+}
+
+window.onload = loadVmTable;
+</script>
 
 <div style="display: flex; justify-content: center;">
   <table style="border-collapse: collapse; width: auto; max-width: 1000px; margin: 0 auto;">
-  <thead>
-    <tr>
-      <th style="text-align: center; padding: 0.5em;">Icon</th>
-      <th style="text-align: left; padding: 0.5em 1em;">VM Name</th>
-      <th style="text-align: center; padding: 0.5em;">Status</th>
-      <th style="text-align: center; padding: 0.5em;">PCI</th>
-      <th style="text-align: center; padding: 0.5em;">USB</th>
-      <th style="text-align: left; padding: 0.5em;">Graphics</th>
-    </tr>
-  </thead>
-  <tbody>
-<?php
-foreach ($available_vms as $vm) {
-    $xml = shell_exec("virsh dumpxml " . escapeshellarg($vm));
-    $icon = '';
-    if (preg_match('/<vmtemplate[^>]*icon="([^"]+)"/', $xml, $matches)) {
-        $icon_name = basename($matches[1]);
-        $icon = '<img src="/plugins/dynamix.vm.manager/templates/images/' . $icon_name . '" class="img">';
-    } else {
-        $icon = '<span style="display:inline-block; width:24px;"></span>';
-    }
-
-    $vmstate = trim(shell_exec("virsh domstate " . escapeshellarg($vm)));
-    $has_pci = strpos($xml, "<hostdev mode='subsystem' type='pci'") !== false;
-    $has_usb = strpos($xml, "<hostdev mode='subsystem' type='usb'") !== false;
-
-    // Extract GPU (PCI passthrough only)
-    $graphics = '';
-    if (preg_match_all('/<hostdev .*?address=.*?>.*?<source>.*?<address.*?domain=.*?bus=\"(.*?)\" slot=\"(.*?)\" function=\"(.*?)\".*?\/>(.*?)<\/hostdev>/s', $xml, $gpu_matches, PREG_SET_ORDER)) {
-        $graphics = 'Passthrough GPU';
-    } elseif (preg_match('/<graphics.*?>.*?<model type=\'(.*?)\'\/>/s', $xml, $gfx_match)) {
-        $graphics = htmlspecialchars($gfx_match[1]);
-    }
-
-    switch ($vmstate) {
-        case 'running':
-            $state_icon = '<i class="fa fa-play green-text"></i>';
-            break;
-        case 'paused':
-            $state_icon = '<i class="fa fa-square paused orange-text"></i>';
-            break;
-        default:
-            $state_icon = '<i class="fa fa-square stopped red-text"></i>';
-    }
-
-    $pci_icon = $has_pci ? '<i class="icon-hardware PanelIcon"></i>' : '<span style="display:inline-block; width:16px;"></span>';
-    $usb_icon = $has_usb ? '<i class="icon-usb"></i>' : '<span style="display:inline-block; width:16px;"></span>';
-
-    echo "    <tr>\n";
-    echo '      <td style="text-align: center; padding: 0.5em;">' . $icon . '</td>' . "\n";
-    echo '      <td style="padding: 0.5em 1em;">' . $vm . '</td>' . "\n";
-    echo '      <td style="text-align: center; padding: 0.5em;">' . $state_icon . '</td>' . "\n";
-    echo '      <td style="text-align: center; padding: 0.5em;">' . $pci_icon . '</td>' . "\n";
-    echo '      <td style="text-align: center; padding: 0.5em;">' . $usb_icon . '</td>' . "\n";
-    echo '      <td style="padding: 0.5em;">' . $graphics . '</td>' . "\n";
-    echo "    </tr>\n";
-}
-?>
-  </tbody>
-</table></div>
+    <thead>
+      <tr>
+        <th style="text-align: center; padding: 0.5em;">Icon</th>
+        <th style="text-align: left; padding: 0.5em 1em;">VM Name</th>
+        <th style="text-align: center; padding: 0.5em;">Status</th>
+        <th style="text-align: center; padding: 0.5em;">PCI</th>
+        <th style="text-align: center; padding: 0.5em;">USB</th>
+        <th style="text-align: left; padding: 0.5em;">Graphics</th>
+      </tr>
+    </thead>
+    <tbody id="vm-table-body">
+      <tr><td colspan="6" style="text-align: center;">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
 
 <form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
@@ -121,7 +60,7 @@ foreach ($available_vms as $vm) {
 
 VM 1:
 : <select name="VM1" class="narrow">
-    <?php foreach ($available_vms as $vm): ?>
+    <?php foreach ($lv->get_domains() as $vm): ?>
         <option value="<?= $vm ?>" <?= $vm == $vmcyclevmsetup_vm1 ? 'selected' : '' ?>><?= $vm ?></option>
     <?php endforeach; ?>
   </select>
@@ -131,7 +70,7 @@ VM 1:
 
 VM 2:
 : <select name="VM2" class="narrow">
-    <?php foreach ($available_vms as $vm): ?>
+    <?php foreach ($lv->get_domains() as $vm): ?>
         <option value="<?= $vm ?>" <?= $vm == $vmcyclevmsetup_vm2 ? 'selected' : '' ?>><?= $vm ?></option>
     <?php endforeach; ?>
   </select>
