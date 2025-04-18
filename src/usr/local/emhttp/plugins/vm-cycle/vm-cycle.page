@@ -24,41 +24,43 @@ function getIcon($res, $uuid) {
   return $icon;
 }
 
-function getGpuPciTree($config) {
+function getGpuDevices($config) {
   global $gpuList;
-  $tree = [];
+  $devices = [];
   if (!empty($config['gpu'])) {
     foreach ($config['gpu'] as $gpu) {
       foreach ($gpuList as $known) {
         if ($gpu['id'] == $known['id']) {
-          $tree[] = "<strong>" . htmlspecialchars($known['name']) . "</strong><br><span style='margin-left:1em;'>" . $gpu['id'] . "</span>";
+          $devices[] = [
+            'name' => $known['name'],
+            'id' => $gpu['id']
+          ];
         }
       }
     }
   }
-  return implode("<br>", $tree);
+  return $devices;
 }
 
-function getAllPciTree($config) {
-  global $gpuList;
-  $gpu_ids = array_column($gpuList, 'id');
-  $tree = [];
-  $all_pci_ids = [];
+function getOtherPciDevices($config, $gpuIds) {
+  $devices = [];
   if (!empty($config['gpu'])) {
     foreach ($config['gpu'] as $gpu) {
-      $all_pci_ids[] = $gpu['id'];
+      $gpuIds[] = $gpu['id'];
     }
   }
   if (!empty($config['pci'])) {
     foreach ($config['pci'] as $pci) {
-      $all_pci_ids[] = $pci['id'];
+      if (!in_array($pci['id'], $gpuIds)) {
+        $name = trim(shell_exec("lspci -s " . escapeshellarg($pci['id']) . " | cut -d' ' -f5-"));
+        $devices[] = [
+          'name' => $name,
+          'id' => $pci['id']
+        ];
+      }
     }
   }
-  foreach (array_unique($all_pci_ids) as $pciid) {
-    $name = trim(shell_exec("lspci -s " . escapeshellarg($pciid) . " | cut -d' ' -f5-"));
-    $tree[] = ($name ? "<strong>" . htmlspecialchars($name) . "</strong><br><span style='margin-left:1em;'>" : '') . $pciid . "</span>";
-  }
-  return implode("<br>", $tree);
+  return $devices;
 }
 
 function getUsbNames($config) {
@@ -88,11 +90,12 @@ function getUsbNames($config) {
     <thead>
       <tr style="text-align: left;">
         <th style="width: 8%;">Icon</th>
-        <th style="width: 18%;">VM Name</th>
-        <th style="width: 10%;">Status</th>
-        <th style="width: 24%;">GPU(s)</th>
-        <th style="width: 24%;">Other PCI Devices</th>
-        <th style="width: 16%;">USB Devices</th>
+        <th style="width: 14%;">VM Name</th>
+        <th style="width: 8%;">Status</th>
+        <th style="width: 20%;">GPU(s)</th>
+        <th style="width: 20%;">GPU PCI Address(es)</th>
+        <th style="width: 20%;">Other PCI Devices</th>
+        <th style="width: 10%;">USB Devices</th>
       </tr>
     </thead>
     <tbody>
@@ -102,8 +105,8 @@ function getUsbNames($config) {
   $uuid = $lv->domain_get_uuid($res);
   $config = domain_to_config($uuid);
   $icon = getIcon($res, $uuid);
-  $gpu = getGpuPciTree($config);
-  $all_pci = getAllPciTree($config);
+  $gpuDevices = getGpuDevices($config);
+  $otherPciDevices = getOtherPciDevices($config, array_column($gpuDevices, 'id'));
   $usb = getUsbNames($config);
   $state = $lv->domain_state_translate($lv->domain_get_info($res)['state']);
 ?>
@@ -111,8 +114,9 @@ function getUsbNames($config) {
         <td><img src="<?= $icon ?>" class="img" style="height: 32px;"></td>
         <td><?= htmlspecialchars($vm) ?></td>
         <td><?= htmlspecialchars($state) ?></td>
-        <td><?= $gpu ?></td>
-        <td><?= $all_pci ?></td>
+        <td><?= implode("<br>", array_map(fn($d) => htmlspecialchars($d['name']), $gpuDevices)) ?></td>
+        <td><?= implode("<br>", array_map(fn($d) => $d['id'], $gpuDevices)) ?></td>
+        <td><?= implode("<br>", array_map(fn($d) => htmlspecialchars($d['name']) . "<br><span style='margin-left:1em;'>" . $d['id'] . "</span>", $otherPciDevices)) ?></td>
         <td><?= $usb ?></td>
       </tr>
 <?php endforeach; ?>
