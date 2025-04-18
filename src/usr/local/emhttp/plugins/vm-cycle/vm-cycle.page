@@ -44,44 +44,31 @@ function getGpuDevices($config) {
 
 function getOtherPciDevices($config, $gpuIds) {
   $devices = [];
-  if (!empty($config['gpu'])) {
-    foreach ($config['gpu'] as $gpu) {
-      $gpuIds[] = $gpu['id'];
-    }
-  }
-  if (!empty($config['pci'])) {
-    foreach ($config['pci'] as $pci) {
-      if (!in_array($pci['id'], $gpuIds)) {
-        $name = trim(shell_exec("lspci -s " . escapeshellarg($pci['id']) . " | cut -d' ' -f5-"));
-        $devices[] = [
-          'name' => $name,
-          'id' => $pci['id']
-        ];
-      }
+  $allPci = array_merge($config['pci'] ?? [], $config['gpu'] ?? []);
+  foreach ($allPci as $pci) {
+    if (!in_array($pci['id'], $gpuIds)) {
+      $name = trim(shell_exec("lspci -s " . escapeshellarg($pci['id']) . " | cut -d' ' -f5-"));
+      $devices[] = [
+        'name' => $name,
+        'id' => $pci['id']
+      ];
     }
   }
   return $devices;
 }
 
-function getUsbNames($config) {
-  $usbNames = [];
+function getUsbDevices($config) {
+  $usbDevices = [];
   if (!empty($config['usb'])) {
     foreach ($config['usb'] as $usb) {
-      $name = $usb['name'] ?? '';
-      $vendor = $usb['vendor'] ?? '';
-      $product = $usb['product'] ?? '';
-      if ($name) {
-        $usbNames[] = $name;
-      } elseif ($vendor && $product) {
-        $id = strtolower(sprintf("%04x:%04x", hexdec($vendor), hexdec($product)));
-        $label = trim(shell_exec("lsusb | grep $id | cut -d' ' -f7-"));
-        $usbNames[] = $label ?: "$vendor:$product";
-      } elseif (!empty($usb['id'])) {
-        $usbNames[] = $usb['id'];
-      }
+      $entry = [
+        'id' => $usb['id'] ?? '',
+        'name' => $usb['name'] ?? ''
+      ];
+      $usbDevices[] = $entry;
     }
   }
-  return implode("<br>", $usbNames);
+  return $usbDevices;
 }
 ?>
 
@@ -89,13 +76,15 @@ function getUsbNames($config) {
   <table class="tablesorter" style="width: 100%; max-width: 1400px; margin: 0 auto; table-layout: fixed;">
     <thead>
       <tr style="text-align: left;">
-        <th style="width: 8%;">Icon</th>
-        <th style="width: 14%;">VM Name</th>
-        <th style="width: 8%;">Status</th>
-        <th style="width: 20%;">GPU(s)</th>
-        <th style="width: 20%;">GPU PCI Address(es)</th>
-        <th style="width: 20%;">Other PCI Devices</th>
-        <th style="width: 10%;">USB Devices</th>
+        <th style="width: 6%;">Icon</th>
+        <th style="width: 12%;">VM Name</th>
+        <th style="width: 6%;">Status</th>
+        <th style="width: 10%;">GPU PCI Address(es)</th>
+        <th style="width: 14%;">GPU(s)</th>
+        <th style="width: 10%;">Other PCI Device Address(es)</th>
+        <th style="width: 14%;">Other PCI Devices</th>
+        <th style="width: 10%;">USB Device Address(es)</th>
+        <th style="width: 18%;">USB Devices</th>
       </tr>
     </thead>
     <tbody>
@@ -106,18 +95,21 @@ function getUsbNames($config) {
   $config = domain_to_config($uuid);
   $icon = getIcon($res, $uuid);
   $gpuDevices = getGpuDevices($config);
-  $otherPciDevices = getOtherPciDevices($config, array_column($gpuDevices, 'id'));
-  $usb = getUsbNames($config);
+  $gpuIds = array_column($gpuDevices, 'id');
+  $otherPciDevices = getOtherPciDevices($config, $gpuIds);
+  $usbDevices = getUsbDevices($config);
   $state = $lv->domain_state_translate($lv->domain_get_info($res)['state']);
 ?>
       <tr>
         <td><img src="<?= $icon ?>" class="img" style="height: 32px;"></td>
         <td><?= htmlspecialchars($vm) ?></td>
         <td><?= htmlspecialchars($state) ?></td>
+        <td><?= implode("<br>", array_column($gpuDevices, 'id')) ?></td>
         <td><?= implode("<br>", array_map(fn($d) => htmlspecialchars($d['name']), $gpuDevices)) ?></td>
-        <td><?= implode("<br>", array_map(fn($d) => $d['id'], $gpuDevices)) ?></td>
-        <td><?= implode("<br>", array_map(fn($d) => htmlspecialchars($d['name']) . "<br><span style='margin-left:1em;'>" . $d['id'] . "</span>", $otherPciDevices)) ?></td>
-        <td><?= $usb ?></td>
+        <td><?= implode("<br>", array_column($otherPciDevices, 'id')) ?></td>
+        <td><?= implode("<br>", array_map(fn($d) => htmlspecialchars($d['name']), $otherPciDevices)) ?></td>
+        <td><?= implode("<br>", array_column($usbDevices, 'id')) ?></td>
+        <td><?= implode("<br>", array_column($usbDevices, 'name')) ?></td>
       </tr>
 <?php endforeach; ?>
     </tbody>
