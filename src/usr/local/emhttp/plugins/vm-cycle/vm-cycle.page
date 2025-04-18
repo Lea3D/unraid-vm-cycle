@@ -3,6 +3,8 @@ Icon="vm-cycle.png"
 Title="vm-cycle"
 ---
 <?php
+require_once "/usr/local/emhttp/plugins/dynamix.vm.manager/include/libvirt_helpers.php";
+
 $vmcyclevmsetup = parse_ini_file("/boot/config/plugins/vm-cycle/vmcyclesettings",true);
 $lv = new Libvirt('qemu:///system');
 $vms = $lv->get_domains();
