@@ -24,36 +24,36 @@ function getIcon($res, $uuid) {
   return $icon;
 }
 
-function extractDevices($config, $type) {
+function extractGroupedDevices($config, $type) {
   $result = [];
   foreach ($config[$type] ?? [] as $entry) {
-    $addr = $entry['bus'] ?? $entry['id'] ?? 'unknown';
-    $name = $entry['name'] ?? $entry['id'] ?? 'unnamed';
-    $result[] = "$addr - $name";
+    $addr = $entry['id'] ?? ($entry['bus'] ?? 'unknown');
+    $name = $entry['name'] ?? $addr;
+    $result[] = "$addr<br><small>$name</small>";
   }
-  return implode("<br>", $result);
+  return implode("<br><br>", $result);
 }
 
-function extractPciDevices($config, $gpuList) {
+function extractPciGroupedDevices($config, $gpuList) {
   $gpuSet = array_column($gpuList, 'id');
   $gpuEntries = [];
   $pciEntries = [];
 
   foreach (($config['gpu'] ?? []) as $gpu) {
-    $bus = $gpu['bus'] ?? $gpu['id'] ?? 'unknown';
-    $name = $gpu['id'] ?? 'unnamed';
-    $gpuEntries[] = "$bus - $name";
+    $bus = $gpu['id'] ?? ($gpu['bus'] ?? 'unknown');
+    $name = $gpu['name'] ?? $bus;
+    $gpuEntries[] = "$bus<br><small>$name</small>";
   }
 
   foreach (($config['pci'] ?? []) as $pci) {
     if (!in_array($pci['id'], $gpuSet)) {
-      $bus = $pci['bus'] ?? $pci['id'] ?? 'unknown';
-      $name = trim(shell_exec("lspci -s " . escapeshellarg($pci['id']) . " | cut -d' ' -f5-"));
-      $pciEntries[] = "$bus - $name";
+      $bus = $pci['id'] ?? ($pci['bus'] ?? 'unknown');
+      $name = trim(shell_exec("lspci -s " . escapeshellarg($bus) . " | cut -d' ' -f5-"));
+      $pciEntries[] = "$bus<br><small>$name</small>";
     }
   }
 
-  return [implode("<br>", $gpuEntries), implode("<br>", $pciEntries)];
+  return [implode("<br><br>", $gpuEntries), implode("<br><br>", $pciEntries)];
 }
 ?>
 
@@ -77,8 +77,8 @@ function extractPciDevices($config, $gpuList) {
   $config = domain_to_config($uuid);
   $icon = getIcon($res, $uuid);
   $state = $lv->domain_state_translate($lv->domain_get_info($res)['state']);
-  [$gpus, $pcis] = extractPciDevices($config, $gpuList);
-  $usbs = extractDevices($config, 'usb');
+  [$gpus, $pcis] = extractPciGroupedDevices($config, $gpuList);
+  $usbs = extractGroupedDevices($config, 'usb');
 
   switch ($state) {
     case 'running':
