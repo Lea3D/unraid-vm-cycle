@@ -23,27 +23,37 @@ function getIcon($res, $uuid) {
   }
   return $icon;
 }
-function getGpuNames($config) {
+
+function getGpuPciTree($config) {
   global $gpuList;
-  $names = [];
+  $tree = [];
   if (!empty($config['gpu'])) {
     foreach ($config['gpu'] as $gpu) {
       foreach ($gpuList as $known) {
-        if ($gpu['id'] == $known['id']) $names[] = $known['name'];
+        if ($gpu['id'] == $known['id']) {
+          $tree[] = $known['name'] . "<br>&emsp;" . $gpu['id'];
+        }
       }
     }
   }
-  return implode("<br>", $names);
+  return implode("<br>", $tree);
 }
-function getOtherPciNames($config) {
-  $names = [];
+
+function getAllPciTree($config) {
+  global $gpuList;
+  $gpu_ids = array_column($gpuList, 'id');
+  $tree = [];
   if (!empty($config['pci'])) {
     foreach ($config['pci'] as $pci) {
-      $names[] = $pci['id'];
+      $entry = $pci['id'];
+      if (!in_array($pci['id'], $gpu_ids)) {
+        $tree[] = $entry;
+      }
     }
   }
-  return implode("<br>", $names);
+  return implode("<br>", $tree);
 }
+
 function getUsbNames($config) {
   $usbNames = [];
   if (!empty($config['usb'])) {
@@ -73,7 +83,7 @@ function getUsbNames($config) {
         <th>VM Name</th>
         <th>Status</th>
         <th>GPU(s)</th>
-        <th>PCI Devices</th>
+        <th>Other PCI Devices</th>
         <th>USB Devices</th>
       </tr>
     </thead>
@@ -84,8 +94,8 @@ function getUsbNames($config) {
   $uuid = $lv->domain_get_uuid($res);
   $config = domain_to_config($uuid);
   $icon = getIcon($res, $uuid);
-  $gpus = getGpuNames($config);
-  $pci = getOtherPciNames($config);
+  $gpus = getGpuPciTree($config);
+  $pci = getAllPciTree($config);
   $usb = getUsbNames($config);
   $state = $lv->domain_state_translate($lv->domain_get_info($res)['state']);
 ?>
