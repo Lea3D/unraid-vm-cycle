@@ -41,10 +41,23 @@ function getPciNames($config) {
   return implode("<br>", $names);
 }
 function getUsbNames($config) {
+  $usbNames = [];
   if (!empty($config['usb'])) {
-    return implode("<br>", array_column($config['usb'], 'name'));
+    foreach ($config['usb'] as $usb) {
+      $name = $usb['name'] ?? '';
+      $vendor = $usb['vendor'] ?? '';
+      $product = $usb['product'] ?? '';
+      if ($name) {
+        $usbNames[] = $name;
+      } elseif ($vendor && $product) {
+        $label = trim(shell_exec("lsusb | grep $vendor:$product | awk -F'\\t' '{print $2}'"));
+        $usbNames[] = $label ?: "$vendor:$product";
+      } elseif (!empty($usb['id'])) {
+        $usbNames[] = $usb['id'];
+      }
+    }
   }
-  return '';
+  return implode("<br>", $usbNames);
 }
 ?>
 
@@ -54,6 +67,7 @@ function getUsbNames($config) {
       <tr>
         <th>Icon</th>
         <th>VM Name</th>
+        <th>Status</th>
         <th>PCI Devices</th>
         <th>USB Devices</th>
       </tr>
@@ -67,10 +81,12 @@ function getUsbNames($config) {
   $icon = getIcon($res, $uuid);
   $pci = getPciNames($config);
   $usb = getUsbNames($config);
+  $state = $lv->domain_state_translate($lv->domain_get_info($res)['state']);
 ?>
       <tr>
         <td><img src="<?= $icon ?>" class="img" style="height: 32px;"></td>
         <td><?= htmlspecialchars($vm) ?></td>
+        <td><?= htmlspecialchars($state) ?></td>
         <td><?= $pci ?></td>
         <td><?= $usb ?></td>
       </tr>
