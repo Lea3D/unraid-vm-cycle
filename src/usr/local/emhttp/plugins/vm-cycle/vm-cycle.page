@@ -23,7 +23,7 @@ function getIcon($res, $uuid) {
   }
   return $icon;
 }
-function getPciNames($config) {
+function getGpuNames($config) {
   global $gpuList;
   $names = [];
   if (!empty($config['gpu'])) {
@@ -33,6 +33,10 @@ function getPciNames($config) {
       }
     }
   }
+  return implode("<br>", $names);
+}
+function getOtherPciNames($config) {
+  $names = [];
   if (!empty($config['pci'])) {
     foreach ($config['pci'] as $pci) {
       $names[] = $pci['id'];
@@ -68,6 +72,7 @@ function getUsbNames($config) {
         <th>Icon</th>
         <th>VM Name</th>
         <th>Status</th>
+        <th>GPU(s)</th>
         <th>PCI Devices</th>
         <th>USB Devices</th>
       </tr>
@@ -79,7 +84,8 @@ function getUsbNames($config) {
   $uuid = $lv->domain_get_uuid($res);
   $config = domain_to_config($uuid);
   $icon = getIcon($res, $uuid);
-  $pci = getPciNames($config);
+  $gpus = getGpuNames($config);
+  $pci = getOtherPciNames($config);
   $usb = getUsbNames($config);
   $state = $lv->domain_state_translate($lv->domain_get_info($res)['state']);
 ?>
@@ -87,6 +93,7 @@ function getUsbNames($config) {
         <td><img src="<?= $icon ?>" class="img" style="height: 32px;"></td>
         <td><?= htmlspecialchars($vm) ?></td>
         <td><?= htmlspecialchars($state) ?></td>
+        <td><?= $gpus ?></td>
         <td><?= $pci ?></td>
         <td><?= $usb ?></td>
       </tr>
