@@ -79,12 +79,12 @@ function getUsbDevices($config) {
         <th style="width: 6%;">Icon</th>
         <th style="width: 12%;">VM Name</th>
         <th style="width: 6%;">Status</th>
-        <th style="width: 10%;">GPU PCI Address(es)</th>
+        <th style="width: 4%;"></th>
         <th style="width: 14%;">GPU(s)</th>
-        <th style="width: 10%;">Other PCI Device Address(es)</th>
+        <th style="width: 4%;"></th>
         <th style="width: 14%;">Other PCI Devices</th>
-        <th style="width: 10%;">USB Device Address(es)</th>
-        <th style="width: 18%;">USB Devices</th>
+        <th style="width: 4%;"></th>
+        <th style="width: 14%;">USB Devices</th>
       </tr>
     </thead>
     <tbody>
