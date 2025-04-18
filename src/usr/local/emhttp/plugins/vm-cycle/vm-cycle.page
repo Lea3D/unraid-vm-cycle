@@ -31,7 +31,7 @@ function getGpuPciTree($config) {
     foreach ($config['gpu'] as $gpu) {
       foreach ($gpuList as $known) {
         if ($gpu['id'] == $known['id']) {
-          $tree[] = $known['name'] . "<br>&emsp;" . $gpu['id'];
+          $tree[] = "<strong>" . htmlspecialchars($known['name']) . "</strong><br><span style='margin-left:1em;'>" . $gpu['id'] . "</span>";
         }
       }
     }
@@ -55,8 +55,8 @@ function getAllPciTree($config) {
     }
   }
   foreach (array_unique($all_pci_ids) as $pciid) {
-    $name = trim(shell_exec("lspci -s " . escapeshellarg($pciid) . " | cut -d' ' -f5-")." ");
-    $tree[] = ($name ? htmlspecialchars($name) . "<br>&emsp;" : '') . $pciid;
+    $name = trim(shell_exec("lspci -s " . escapeshellarg($pciid) . " | cut -d' ' -f5-"));
+    $tree[] = ($name ? "<strong>" . htmlspecialchars($name) . "</strong><br><span style='margin-left:1em;'>" : '') . $pciid . "</span>";
   }
   return implode("<br>", $tree);
 }
@@ -84,15 +84,15 @@ function getUsbNames($config) {
 ?>
 
 <div style="display: flex; justify-content: center;">
-  <table class="tablesorter" style="width: auto; max-width: 1400px; margin: 0 auto;">
+  <table class="tablesorter" style="width: 100%; max-width: 1400px; margin: 0 auto; table-layout: fixed;">
     <thead>
-      <tr>
-        <th>Icon</th>
-        <th>VM Name</th>
-        <th>Status</th>
-        <th>GPU(s)</th>
-        <th>Other PCI Devices</th>
-        <th>USB Devices</th>
+      <tr style="text-align: left;">
+        <th style="width: 8%;">Icon</th>
+        <th style="width: 18%;">VM Name</th>
+        <th style="width: 10%;">Status</th>
+        <th style="width: 24%;">GPU(s)</th>
+        <th style="width: 24%;">Other PCI Devices</th>
+        <th style="width: 16%;">USB Devices</th>
       </tr>
     </thead>
     <tbody>
