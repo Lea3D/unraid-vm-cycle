@@ -41,7 +41,7 @@ function extractPciGroupedDevices($config, $gpuList) {
 
   foreach (($config['gpu'] ?? []) as $gpu) {
     $bus = $gpu['id'] ?? ($gpu['bus'] ?? 'unknown');
-    $name = $gpu['name'] ?? $bus;
+    $name = $gpu['name'] ?? ($gpu['model'] ?? 'GPU');
     $gpuEntries[] = "$bus<br><small>$name</small>";
   }
 
