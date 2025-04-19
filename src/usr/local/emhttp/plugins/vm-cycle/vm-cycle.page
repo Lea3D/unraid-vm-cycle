@@ -15,6 +15,20 @@ $vmcyclevmsetup_vm2 = $vmcyclevmsetup['VM2'] ?? "";
 $vmcyclevmsetup_vmdocker = $vmcyclevmsetup['VMD'] ?? "";
 $vmcyclevmsetup_docker = $vmcyclevmsetup['DOCKERS'] ?? "";
 
+$sharedDevices = [];
+foreach ($vms as $vm) {
+  $res = $lv->get_domain_by_name($vm);
+  $uuid = $lv->domain_get_uuid($res);
+  $config = domain_to_config($uuid);
+  foreach (['gpu', 'pci', 'usb'] as $type) {
+    foreach (($config[$type] ?? []) as $entry) {
+      if (!empty($entry['id'])) {
+        $sharedDevices[$entry['id']][] = $vm;
+      }
+    }
+  }
+}
+
 function getIcon($res, $uuid) {
   global $lv;
   $icon = $lv->domain_get_icon_url($res);
@@ -24,7 +38,7 @@ function getIcon($res, $uuid) {
   return $icon;
 }
 
-function extractPciGroupedDevices($config, $gpuList) {
+function extractPciGroupedDevices($config, $gpuList, $sharedDevices) {
   $gpuSet = array_column($gpuList, 'id');
   $gpuEntries = [];
   $pciEntries = [];
@@ -41,21 +55,23 @@ function extractPciGroupedDevices($config, $gpuList) {
     if (!$name) {
       $name = trim(shell_exec("lspci -s " . escapeshellarg($bus) . " | cut -d' ' -f5-"));
     }
-    $gpuEntries[] = "$bus<br><small>" . htmlspecialchars($name) . "</small>";
+    $class = count($sharedDevices[$bus] ?? []) > 1 ? 'shared-device' : '';
+    $gpuEntries[] = "<div class='$class'>$bus<br><small>" . htmlspecialchars($name) . "</small></div>";
   }
 
   foreach (($config['pci'] ?? []) as $pci) {
     if (!in_array($pci['id'], $gpuSet)) {
       $bus = $pci['id'] ?? ($pci['bus'] ?? 'unknown');
       $name = trim(shell_exec("lspci -s " . escapeshellarg($bus) . " | cut -d' ' -f5-"));
-      $pciEntries[] = "$bus<br><small>" . htmlspecialchars($name) . "</small>";
+      $class = count($sharedDevices[$bus] ?? []) > 1 ? 'shared-device' : '';
+      $pciEntries[] = "<div class='$class'>$bus<br><small>" . htmlspecialchars($name) . "</small></div>";
     }
   }
 
   return [implode("<br><br>", $gpuEntries), implode("<br><br>", $pciEntries)];
 }
 
-function extractGroupedDevices($config, $type) {
+function extractGroupedDevices($config, $type, $sharedDevices) {
   $result = [];
   $usbMap = [];
 
@@ -68,11 +84,21 @@ function extractGroupedDevices($config, $type) {
   foreach ($config[$type] ?? [] as $entry) {
     $addr = strtolower($entry['id'] ?? ($entry['bus'] ?? 'unknown'));
     $name = $usbMap[$addr] ?? ($entry['name'] ?? '');
-    $result[] = "$addr<br><small>" . htmlspecialchars($name) . "</small>";
+    $class = count($sharedDevices[$addr] ?? []) > 1 ? 'shared-device' : '';
+    $result[] = "<div class='$class'>$addr<br><small>" . htmlspecialchars($name) . "</small></div>";
   }
   return implode("<br><br>", $result);
 }
 ?>
+
+<style>
+  .shared-device {
+    background-color: #fff3cd;
+    border-left: 3px solid #ffc107;
+    padding-left: 4px;
+    font-weight: bold;
+  }
+</style>
 
 <div style="display: flex; justify-content: center;">
   <table class="tablesorter" style="width: 100%; max-width: 1600px; margin: 0 auto; table-layout: auto;">
@@ -94,8 +120,8 @@ function extractGroupedDevices($config, $type) {
   $config = domain_to_config($uuid);
   $icon = getIcon($res, $uuid);
   $state = $lv->domain_state_translate($lv->domain_get_info($res)['state']);
-  [$gpus, $pcis] = extractPciGroupedDevices($config, $gpuList);
-  $usbs = extractGroupedDevices($config, 'usb');
+  [$gpus, $pcis] = extractPciGroupedDevices($config, $gpuList, $sharedDevices);
+  $usbs = extractGroupedDevices($config, 'usb', $sharedDevices);
 
   switch ($state) {
     case 'running':
@@ -120,6 +146,8 @@ function extractGroupedDevices($config, $type) {
     </tbody>
   </table>
 </div>
+
+<!-- FORM + SCRIPT bleiben unverändert -->
 
 <form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
