@@ -24,16 +24,6 @@ function getIcon($res, $uuid) {
   return $icon;
 }
 
-function extractGroupedDevices($config, $type) {
-  $result = [];
-  foreach ($config[$type] ?? [] as $entry) {
-    $addr = $entry['id'] ?? ($entry['bus'] ?? 'unknown');
-    $name = $entry['name'] ?? $addr;
-    $result[] = "$addr - <small>$name</small>";
-  }
-  return implode("<br>", $result);
-}
-
 function extractPciGroupedDevices($config, $gpuList) {
   $gpuSet = array_column($gpuList, 'id');
   $gpuEntries = [];
@@ -41,7 +31,16 @@ function extractPciGroupedDevices($config, $gpuList) {
 
   foreach (($config['gpu'] ?? []) as $gpu) {
     $bus = $gpu['id'] ?? ($gpu['bus'] ?? 'unknown');
-    $name = $gpu['name'] ?? ($gpu['model'] ?? 'GPU');
+    $name = '';
+    foreach ($gpuList as $known) {
+      if ($known['id'] === $bus) {
+        $name = $known['name'];
+        break;
+      }
+    }
+    if (!$name) {
+      $name = $gpu['model'] ?? 'GPU';
+    }
     $gpuEntries[] = "$bus - <small>$name</small>";
   }
 
@@ -54,6 +53,16 @@ function extractPciGroupedDevices($config, $gpuList) {
   }
 
   return [implode("<br>", $gpuEntries), implode("<br>", $pciEntries)];
+}
+
+function extractGroupedDevices($config, $type) {
+  $result = [];
+  foreach ($config[$type] ?? [] as $entry) {
+    $addr = $entry['id'] ?? ($entry['bus'] ?? 'unknown');
+    $name = $entry['name'] ?? $addr;
+    $result[] = "$addr - <small>$name</small>";
+  }
+  return implode("<br>", $result);
 }
 ?>
 
