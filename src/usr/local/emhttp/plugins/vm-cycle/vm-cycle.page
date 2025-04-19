@@ -39,7 +39,7 @@ function extractPciGroupedDevices($config, $gpuList) {
       }
     }
     if (!$name) {
-      $name = $gpu['model'] ?? 'GPU';
+      $name = trim(shell_exec("lspci -s " . escapeshellarg($bus) . " | cut -d' ' -f5-"));
     }
     $gpuEntries[] = "$bus - <small>$name</small>";
   }
@@ -59,7 +59,10 @@ function extractGroupedDevices($config, $type) {
   $result = [];
   foreach ($config[$type] ?? [] as $entry) {
     $addr = $entry['id'] ?? ($entry['bus'] ?? 'unknown');
-    $name = $entry['name'] ?? $addr;
+    $name = $entry['name'] ?? '';
+    if (!$name) {
+      $name = trim(shell_exec("lsusb -d " . escapeshellarg($addr) . " 2>/dev/null | cut -d' ' -f7-"));
+    }
     $result[] = "$addr - <small>$name</small>";
   }
   return implode("<br>", $result);
