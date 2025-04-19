@@ -41,18 +41,18 @@ function extractPciGroupedDevices($config, $gpuList) {
     if (!$name) {
       $name = trim(shell_exec("lspci -s " . escapeshellarg($bus) . " | cut -d' ' -f5-"));
     }
-    $gpuEntries[] = "$bus<br><small>$name</small>";
+    $gpuEntries[] = "$bus - <small>$name</small>";
   }
 
   foreach (($config['pci'] ?? []) as $pci) {
     if (!in_array($pci['id'], $gpuSet)) {
       $bus = $pci['id'] ?? ($pci['bus'] ?? 'unknown');
       $name = trim(shell_exec("lspci -s " . escapeshellarg($bus) . " | cut -d' ' -f5-"));
-      $pciEntries[] = "$bus<br><small>$name</small>";
+      $pciEntries[] = "$bus - <small>$name</small>";
     }
   }
 
-  return [implode("<br><br>", $gpuEntries), implode("<br><br>", $pciEntries)];
+  return [implode("<br>", $gpuEntries), implode("<br>", $pciEntries)];
 }
 
 function extractGroupedDevices($config, $type) {
@@ -60,13 +60,21 @@ function extractGroupedDevices($config, $type) {
   foreach ($config[$type] ?? [] as $entry) {
     $addr = $entry['id'] ?? ($entry['bus'] ?? 'unknown');
     $name = $entry['name'] ?? '';
-    if (!$name) {
-      $lsusbOutput = shell_exec("lsusb | grep ".escapeshellarg(str_replace(':', '', $addr)));
-      $name = trim(preg_replace('/.*ID [^ ]+ (.*)/', '$1', $lsusbOutput));
+    if (!$name && preg_match('/^([0-9a-f]{4}):([0-9a-f]{4})$/i', $addr, $matches)) {
+      $vendorProduct = $matches[1] . ':' . $matches[2];
+      $lsusbOutput = shell_exec("lsusb");
+      foreach (explode("\n", $lsusbOutput) as $line) {
+        if (strpos($line, strtoupper($vendorProduct)) !== false) {
+          if (preg_match('/ID [^ ]+ (.+)$/', $line, $m)) {
+            $name = trim($m[1]);
+            break;
+          }
+        }
+      }
     }
-    $result[] = "$addr<br><small>$name</small>";
+    $result[] = "$addr - <small>$name</small>";
   }
-  return implode("<br><br>", $result);
+  return implode("<br>", $result);
 }
 ?>
 
