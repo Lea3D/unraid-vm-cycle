@@ -2,7 +2,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "vm-cycle">
 <!ENTITY author    "lea3d">
-<!ENTITY version   "2025.04.19_20">
+<!ENTITY version   "2025.04.19_21">
 <!ENTITY launch    "Settings/vm-cycle">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/lea3d/unraid-vm-cycle/master">
 <!ENTITY pluginURL "&gitURL;/&name;.plg">
