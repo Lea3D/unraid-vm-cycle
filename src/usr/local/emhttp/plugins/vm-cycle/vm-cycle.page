@@ -47,14 +47,10 @@ function getIcon($res, $uuid) {
 function styleBox($id, $name, $sharedDevices, $activeDevices) {
   $isShared = count($sharedDevices[$id] ?? []) > 1;
   $isActive = isset($activeDevices[$id]);
-  $style = "";
-  if ($isShared) {
-    $style .= 'font-weight:bold;border-color:orange;color:orange;';
-  }
-  if ($isActive) {
-    $style .= 'background-color:#e0f0ff;';
-  }
-  return "<span class='device-box' style='$style'>$id<br><small>" . htmlspecialchars($name) . "</small></span>";
+  $classes = [];
+  if ($isShared) $classes[] = "shared";
+  if ($isActive) $classes[] = "active";
+  return "<span class='device-box ".implode(' ', $classes)."'>".htmlspecialchars($id)."<br><small>" . htmlspecialchars($name) . "</small></span>";
 }
 
 function extractPciGroupedDevices($config, $gpuList, $sharedDevices, $activeDevices) {
@@ -117,7 +113,16 @@ function extractGroupedDevices($config, $type, $sharedDevices, $activeDevices) {
     padding: 1px 10px 1px 10px;
     margin-left: 1rem;
     border-style: solid;
-    border-width: 1px;
+
+  }
+  .device-box.shared {
+    font-weight: bold;
+    border-color: orange;
+    color: orange;
+  }
+  .device-box.active {
+    background-color: #e0f0ff;
+    border-width: 3px;
   }
 </style>
 
@@ -167,7 +172,6 @@ function extractGroupedDevices($config, $type, $sharedDevices, $activeDevices) {
     </tbody>
   </table>
 </div>
-
 
 <form markdown="1" id="form" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" id="file" name="#file" value="/boot/config/plugins/vm-cycle/vmcyclesettings" />
