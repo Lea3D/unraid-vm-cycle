@@ -56,7 +56,7 @@ function extractPciGroupedDevices($config, $gpuList, $sharedDevices) {
       $name = trim(shell_exec("lspci -s " . escapeshellarg($bus) . " | cut -d' ' -f5-"));
     }
     $class = count($sharedDevices[$bus] ?? []) > 1 ? 'shared-device' : '';
-    $gpuEntries[] = "<div class='$class'>$bus<br><small><span style='color: green;'>" . htmlspecialchars($name) . "</span></small></div>";
+    $gpuEntries[] = "<div class='$class'>$bus<br><small><span style='color: orange;'>" . htmlspecialchars($name) . "</span></small></div>";
   }
 
   foreach (($config['pci'] ?? []) as $pci) {
